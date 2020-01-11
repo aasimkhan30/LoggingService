@@ -1,0 +1,119 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "edu.ucsc.loggingservice";
+option java_outer_classname = "LoggingServiceProto";
+option objc_class_prefix = "LGS";
+
+package helloworld;
+
+// The greeting service definition.
+service LoggingService {
+    // Sends a greeting
+    rpc SayHello (HelloRequest) returns (HelloReply) {};
+    rpc CreateTag (CreateTagRequest) returns (CreateTagReply) {};
+    rpc UpdateTag (UpdateTagRequest) returns (UpdateTagReply) {};
+    rpc DeleteTag (DeleteTagRequest) returns (DeleteTagReply) {};
+    rpc CreateLog (CreateLogRequest) returns (CreateLogReply) {};
+    rpc GetLedger (GetLedgerRequest) returns (GetLedgerReply) {};
+    rpc GetLogEntry (GetLogEntryRequest) returns (GetLogEntryReply) {};
+    rpc VerifyLedger (VerifyLedgerRequest) returns (VerifyLedgerReply) {};
+    rpc VerifyLog (VerifyLogRequest) returns (VerifyLogRequest) {};
+    rpc getLog(GetLogRequest) returns (GetLogResponse) {};
+}
+
+message LogEntry{
+    string key = 1;
+    string value = 2;
+    string digest = 3;
+    repeated string tags = 4;
+}
+
+message Tag{
+    string name = 1;
+    repeated AccessInfo accessInfo = 2;
+}
+
+message AccessInfo{
+    string name = 1;
+    bool write = 2;
+    bool modify = 3;
+    bool read = 4;
+    bool verify = 5;
+}
+
+message AccessControlList{
+    string key = 1;
+}
+
+// The request message containing the user's name.
+message HelloRequest {
+    string name = 1;
+}
+// The response message containing the greetings
+message HelloReply {
+    string message = 1;
+}
+
+message CreateTagRequest {
+    Tag newTag = 1;
+}
+message CreateTagReply {
+    bool success = 1;
+}
+
+message UpdateTagRequest {
+    Tag updatedTag = 1;
+}
+message UpdateTagReply {
+    bool success = 1;
+}
+
+message DeleteTagRequest {
+    string name = 1;
+}
+message DeleteTagReply {
+    bool success = 1;
+}
+
+message CreateLogRequest {
+    LogEntry log = 1;
+}
+message CreateLogReply {
+    bool success = 1;
+}
+
+message GetLedgerRequest {
+    string tag = 1;
+}
+message GetLedgerReply {
+    repeated LogEntry logs = 1;
+}
+
+message GetLogEntryRequest{
+    string key = 1;
+}
+message GetLogEntryReply {
+    repeated LogEntry log = 1;
+}
+
+message VerifyLedgerRequest {
+    string tag = 1;
+}
+message VerifyLedgerReply {
+    string digest = 1;
+}
+
+message VerifyLogRequest {
+    string key = 1;
+}
+message VerifyLogReply {
+    string digest = 1;
+}
+
+message GetLogRequest {
+    string requestType = 1;
+}
+message GetLogResponse {
+    repeated LogEntry log = 1;
+}
