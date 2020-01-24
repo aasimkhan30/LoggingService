@@ -67,6 +67,17 @@ public class LoggingServiceClient {
         logger.info("Greeting: " + reply.getLogList().size());
     }
 
+    public void verifyLogEntry(){
+
+    }
+
+    public void verifyLogFile(){
+
+    }
+
+    public void verifyLog(){
+
+    }
 
     public void main(String args[]){
 

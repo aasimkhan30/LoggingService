@@ -11,15 +11,15 @@ package helloworld;
 service LoggingService {
     // Sends a greeting
     rpc SayHello (HelloRequest) returns (HelloReply) {};
-    rpc CreateTag (CreateTagRequest) returns (CreateTagReply) {};
-    rpc UpdateTag (UpdateTagRequest) returns (UpdateTagReply) {};
-    rpc DeleteTag (DeleteTagRequest) returns (DeleteTagReply) {};
-    rpc CreateLog (CreateLogRequest) returns (CreateLogReply) {};
-    rpc GetLedger (GetLedgerRequest) returns (GetLedgerReply) {};
-    rpc GetLogEntry (GetLogEntryRequest) returns (GetLogEntryReply) {};
-    rpc VerifyLedger (VerifyLedgerRequest) returns (VerifyLedgerReply) {};
-    rpc VerifyLog (VerifyLogRequest) returns (VerifyLogRequest) {};
-    rpc getLog(GetLogRequest) returns (GetLogResponse) {};
+    rpc CreateTag (CreateTagRequest) returns (CreateTagResponse) {};
+    rpc UpdateTag (UpdateTagRequest) returns (UpdateTagResponse) {};
+    rpc DeleteTag (DeleteTagRequest) returns (DeleteTagResponse) {};
+    rpc CreateLog (CreateLogRequest) returns (CreateLogResponse) {};
+    rpc GetLedger (GetLedgerRequest) returns (GetLedgerResponse) {};
+    rpc GetLogEntry (GetLogEntryRequest) returns (GetLogEntryResponse) {};
+    rpc VerifyLedger (VerifyLedgerRequest) returns (VerifyLedgerResponse) {};
+    rpc VerifyLog (VerifyLogRequest) returns (VerifyLogResponse) {};
+    rpc GetLog(GetLogRequest) returns (GetLogResponse) {};
 }
 
 message LogEntry{
@@ -46,6 +46,11 @@ message AccessControlList{
     string key = 1;
 }
 
+message ResponseStatus{
+    int32 code = 1;
+    string statusCode = 2;
+}
+
 // The request message containing the user's name.
 message HelloRequest {
     string name = 1;
@@ -58,57 +63,65 @@ message HelloReply {
 message CreateTagRequest {
     Tag newTag = 1;
 }
-message CreateTagReply {
+message CreateTagResponse {
     bool success = 1;
+    ResponseStatus status = 2;
 }
 
 message UpdateTagRequest {
     Tag updatedTag = 1;
 }
-message UpdateTagReply {
+message UpdateTagResponse {
     bool success = 1;
+    ResponseStatus status = 2;
 }
 
 message DeleteTagRequest {
     string name = 1;
 }
-message DeleteTagReply {
+message DeleteTagResponse {
     bool success = 1;
+    ResponseStatus status = 2;
 }
 
 message CreateLogRequest {
     LogEntry log = 1;
 }
-message CreateLogReply {
+message CreateLogResponse {
     bool success = 1;
+    ResponseStatus status = 2;
 }
 
 message GetLedgerRequest {
     string tag = 1;
 }
-message GetLedgerReply {
+message GetLedgerResponse {
     repeated LogEntry logs = 1;
+    ResponseStatus status = 2;
 }
 
 message GetLogEntryRequest{
     string key = 1;
 }
-message GetLogEntryReply {
+message GetLogEntryResponse {
     repeated LogEntry log = 1;
+    ResponseStatus status = 2;
 }
 
 message VerifyLedgerRequest {
     string tag = 1;
 }
-message VerifyLedgerReply {
+message VerifyLedgerResponse {
     string digest = 1;
+    ResponseStatus status = 2;
 }
 
 message VerifyLogRequest {
     string key = 1;
 }
-message VerifyLogReply {
+message VerifyLogResponse {
     string digest = 1;
+    ResponseStatus status = 2;
 }
 
 message GetLogRequest {
@@ -116,4 +129,5 @@ message GetLogRequest {
 }
 message GetLogResponse {
     repeated LogEntry log = 1;
+    ResponseStatus status = 2;
 }

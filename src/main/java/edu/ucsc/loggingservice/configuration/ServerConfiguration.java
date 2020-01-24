@@ -25,4 +25,8 @@ public class ServerConfiguration {
         result.consensusPort = Integer.decode(configurations.getProperty("c."+ clusterId+ "." + replicaId + ".cport"));
         return  result;
     }
+
+    public int totalServers(){
+        return Integer.parseInt(configurations.getProperty("cluster.count"));
+    }
 }
