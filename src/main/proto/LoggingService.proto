@@ -19,7 +19,6 @@ service LoggingService {
     rpc GetLogEntry (GetLogEntryRequest) returns (GetLogEntryResponse) {};
     rpc VerifyLedger (VerifyLedgerRequest) returns (VerifyLedgerResponse) {};
     rpc VerifyLog (VerifyLogRequest) returns (VerifyLogResponse) {};
-    rpc GetLog(GetLogRequest) returns (GetLogResponse) {};
 }
 
 message LogEntry{
@@ -102,6 +101,7 @@ message GetLedgerResponse {
 
 message GetLogEntryRequest{
     string key = 1;
+    int32 level = 2;
 }
 message GetLogEntryResponse {
     repeated LogEntry log = 1;
@@ -121,13 +121,5 @@ message VerifyLogRequest {
 }
 message VerifyLogResponse {
     string digest = 1;
-    ResponseStatus status = 2;
-}
-
-message GetLogRequest {
-    string requestType = 1;
-}
-message GetLogResponse {
-    repeated LogEntry log = 1;
     ResponseStatus status = 2;
 }

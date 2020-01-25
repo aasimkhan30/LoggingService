@@ -45,7 +45,7 @@ public class LoggingServiceClient {
     public void addLogEntry(){
         LogEntry demoEntry = LogEntry.newBuilder().addTags("Demo").build();
         CreateLogRequest request = CreateLogRequest.newBuilder().setLog(demoEntry).build();
-        CreateLogReply reply;
+        CreateLogResponse reply;
         try {
             reply = blockingStub.createLog(request);
         } catch (StatusRuntimeException e) {
@@ -56,15 +56,15 @@ public class LoggingServiceClient {
     }
 
     public void getLogs(){
-        GetLogRequest request = GetLogRequest.newBuilder().build();
-        GetLogResponse reply;
-        try {
-            reply = blockingStub.getLog(request);
-        } catch (StatusRuntimeException e) {
-            logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
-            return;
-        }
-        logger.info("Greeting: " + reply.getLogList().size());
+//        GetLogRequest request = GetLogRequest.newBuilder().build();
+//        GetLogResponse reply;
+//        try {
+//            reply = blockingStub.getLog(request);
+//        } catch (StatusRuntimeException e) {
+//            logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
+//            return;
+//        }
+//        logger.info("Greeting: " + reply.getLogList().size());
     }
 
     public void verifyLogEntry(){

@@ -65,52 +65,48 @@ public class LoggingServiceServer{
         }
 
         @Override
-        public void createLog(CreateLogRequest request, StreamObserver<CreateLogReply> responseObserver) {
+        public void createLog(CreateLogRequest request, StreamObserver<CreateLogResponse> responseObserver) {
             logger.info("GETTING LOG " + request.getLog().getKey());
             cServer.addLogEntry(request.getLog());
-            CreateLogReply reply = CreateLogReply.newBuilder().setSuccess(true).build();
+            CreateLogResponse reply = CreateLogResponse.newBuilder().setSuccess(true).build();
             responseObserver.onNext(reply);
             responseObserver.onCompleted();
         }
 
         @Override
-        public void getLog(GetLogRequest request, StreamObserver<GetLogResponse> responseObserver) {
+        public void getLogEntry(GetLogEntryRequest request, StreamObserver<GetLogEntryResponse> responseObserver) {
 
         }
 
+
         @Override
-        public void getLedger(GetLedgerRequest request, StreamObserver<GetLedgerReply> responseObserver) {
+        public void getLedger(GetLedgerRequest request, StreamObserver<GetLedgerResponse> responseObserver) {
             super.getLedger(request, responseObserver);
         }
 
         @Override
-        public void verifyLog(VerifyLogRequest request, StreamObserver<VerifyLogRequest> responseObserver) {
+        public void verifyLog(VerifyLogRequest request, StreamObserver<VerifyLogResponse> responseObserver) {
             super.verifyLog(request, responseObserver);
         }
 
         @Override
-        public void verifyLedger(VerifyLedgerRequest request, StreamObserver<VerifyLedgerReply> responseObserver) {
+        public void verifyLedger(VerifyLedgerRequest request, StreamObserver<VerifyLedgerResponse> responseObserver) {
             super.verifyLedger(request, responseObserver);
         }
 
         @Override
-        public void createTag(CreateTagRequest request, StreamObserver<CreateTagReply> responseObserver) {
+        public void createTag(CreateTagRequest request, StreamObserver<CreateTagResponse> responseObserver) {
             super.createTag(request, responseObserver);
         }
 
         @Override
-        public void deleteTag(DeleteTagRequest request, StreamObserver<DeleteTagReply> responseObserver) {
+        public void deleteTag(DeleteTagRequest request, StreamObserver<DeleteTagResponse> responseObserver) {
             super.deleteTag(request, responseObserver);
         }
 
         @Override
-        public void updateTag(UpdateTagRequest request, StreamObserver<UpdateTagReply> responseObserver) {
+        public void updateTag(UpdateTagRequest request, StreamObserver<UpdateTagResponse> responseObserver) {
             super.updateTag(request, responseObserver);
-        }
-
-        @Override
-        public void getLogEntry(GetLogEntryRequest request, StreamObserver<GetLogEntryReply> responseObserver) {
-            super.getLogEntry(request, responseObserver);
         }
     }
 }
