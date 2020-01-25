@@ -48,16 +48,34 @@ public class ConsensusServer {
     }
 
     public void addLogEntry(LogEntry entry){
+        List<String> entryTags = entry.getTagsList();
+        try {
+            String entrySHA = HashFunctions.SHAsum(entry.toByteArray());
+            for(String t: entryTags){
+                Tag i = tags.get(t);
+                String concat = i.getDigest() + entrySHA;
+                String newSHA = HashFunctions.SHAsum(concat.getBytes());
+                i.toBuilder().setDigest(newSHA).build();
+                entry.toBuilder().setDigest(newSHA).build();
+            }
+        }
+        catch(Exception e){
+            System.out.println(e.getMessage());
+        }
         logs.get(0).add(entry);
     }
 
     public void addMetaLogEntry(Tag tag, int level){
+
     }
 
     public void addMetaLogEntry(LogEntry log, int level){
 
     }
 
+    /*
+    getting a ledger
+     */
     public List<LogEntry> getTag(Tag requestTag){
         List<LogEntry> result;
         int entryLevel = findLevel(requestTag.getName());
@@ -76,6 +94,9 @@ public class ConsensusServer {
         return result;
     }
 
+    /*
+    getting a single entry.
+     */
     public LogEntry getEntry(String key, int level){
         for(LogEntry l : logs.get(level)){
             if(l.getKey() == key) {
