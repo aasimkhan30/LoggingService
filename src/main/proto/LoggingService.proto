@@ -30,7 +30,8 @@ message LogEntry{
 
 message Tag{
     string name = 1;
-    repeated AccessInfo accessInfo = 2;
+    string digest  = 2;
+    repeated AccessInfo accessInfo = 3;
 }
 
 message AccessInfo{
@@ -104,7 +105,7 @@ message GetLogEntryRequest{
     int32 level = 2;
 }
 message GetLogEntryResponse {
-    repeated LogEntry log = 1;
+    LogEntry log = 1;
     ResponseStatus status = 2;
 }
 
@@ -118,6 +119,7 @@ message VerifyLedgerResponse {
 
 message VerifyLogRequest {
     string key = 1;
+    string tag = 2;
 }
 message VerifyLogResponse {
     string digest = 1;

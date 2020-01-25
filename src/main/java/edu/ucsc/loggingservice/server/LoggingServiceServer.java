@@ -9,6 +9,7 @@ import io.grpc.ServerBuilder;
 import io.grpc.stub.StreamObserver;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.logging.Logger;
 
 public class LoggingServiceServer{
@@ -57,6 +58,9 @@ public class LoggingServiceServer{
     }
 
     static class LoggingServiceImpl extends LoggingServiceGrpc.LoggingServiceImplBase {
+        /*
+        Simple request to check if GRPC is working or not.
+         */
         @Override
         public void sayHello(HelloRequest request, StreamObserver<HelloReply> responseObserver) {
             HelloReply reply = HelloReply.newBuilder().setMessage("Hello " + request.getName()).build();
@@ -64,6 +68,9 @@ public class LoggingServiceServer{
             responseObserver.onCompleted();
         }
 
+        /*
+        Creates a log entry in the base ledger.
+         */
         @Override
         public void createLog(CreateLogRequest request, StreamObserver<CreateLogResponse> responseObserver) {
             logger.info("GETTING LOG " + request.getLog().getKey());
@@ -73,40 +80,82 @@ public class LoggingServiceServer{
             responseObserver.onCompleted();
         }
 
+        /*
+        Get a log entry using a key and ledger level. Used to access only a single entry
+         */
         @Override
         public void getLogEntry(GetLogEntryRequest request, StreamObserver<GetLogEntryResponse> responseObserver) {
-
+            LogEntry responseEntry = cServer.getEntry(request.getKey(), request.getLevel());
+            GetLogEntryResponse response = GetLogEntryResponse.newBuilder().setLog(responseEntry).build();
+            responseObserver.onNext(response);
+            responseObserver.onCompleted();
         }
 
-
+        /*
+        Gets an entire ledger based on the tag.
+         */
         @Override
         public void getLedger(GetLedgerRequest request, StreamObserver<GetLedgerResponse> responseObserver) {
-            super.getLedger(request, responseObserver);
+            Tag requestTag = Tag.newBuilder().setName(request.getTag()).build();
+            List<LogEntry> responseLedger = cServer.getTag(requestTag);
+            GetLedgerResponse response = GetLedgerResponse.newBuilder().addAllLogs(responseLedger).build();
+            responseObserver.onNext(response);
+            responseObserver.onCompleted();
         }
 
+        /*
+        Used to verify the chain hash of an entry
+         */
         @Override
         public void verifyLog(VerifyLogRequest request, StreamObserver<VerifyLogResponse> responseObserver) {
-            super.verifyLog(request, responseObserver);
+            LogEntry logEntry = cServer.getEntry(request.getKey(), request.getTag());
+            VerifyLogResponse response = VerifyLogResponse.newBuilder().setDigest(logEntry.getDigest()).build();
+            responseObserver.onNext(response);
+            responseObserver.onCompleted();
         }
 
+        /*
+        Used to verify the hash of tag
+         */
         @Override
         public void verifyLedger(VerifyLedgerRequest request, StreamObserver<VerifyLedgerResponse> responseObserver) {
-            super.verifyLedger(request, responseObserver);
+            Tag tag = cServer.getTag(request.getTag());
+            VerifyLedgerResponse response = VerifyLedgerResponse.newBuilder().setDigest(tag.getDigest()).build();
+            responseObserver.onNext(response);
+            responseObserver.onCompleted();
         }
 
+        /*
+        Creates a tag with user accessInfo
+         */
         @Override
         public void createTag(CreateTagRequest request, StreamObserver<CreateTagResponse> responseObserver) {
-            super.createTag(request, responseObserver);
+            cServer.createTag(request.getNewTag());
+            CreateTagResponse response = CreateTagResponse.newBuilder().setSuccess(true).build();
+            responseObserver.onNext(response);
+            responseObserver.onCompleted();
         }
 
+        /*
+        Deletes a tag
+         */
         @Override
         public void deleteTag(DeleteTagRequest request, StreamObserver<DeleteTagResponse> responseObserver) {
-            super.deleteTag(request, responseObserver);
+            cServer.deleteTag(request.getName());
+            DeleteTagResponse response = DeleteTagResponse.newBuilder().setSuccess(true).build();
+            responseObserver.onNext(response);
+            responseObserver.onCompleted();
         }
 
+        /*
+        Updates a tag with new accessInfo
+         */
         @Override
         public void updateTag(UpdateTagRequest request, StreamObserver<UpdateTagResponse> responseObserver) {
-            super.updateTag(request, responseObserver);
+            cServer.updateTag(request.getUpdatedTag());
+            UpdateTagResponse response = UpdateTagResponse.newBuilder().setSuccess(true).build();
+            responseObserver.onNext(response);
+            responseObserver.onCompleted();
         }
     }
 }
