@@ -13,11 +13,8 @@ import edu.ucsc.loggingservice.models.MetalogData;
 import edu.ucsc.loggingservice.models.ServerInfo;
 import sun.rmi.runtime.Log;
 
-import javax.security.auth.login.Configuration;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.sql.Timestamp;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -28,7 +25,7 @@ public class ConsensusServer {
 
 
     public ConsensusServer(ServerInfo serverInfo, ServerConfiguration rootConfig){
-        rootConfig = rootConfig;
+        serverConfig = rootConfig;
         Config cfg = new Config();
         NetworkConfig networkConfig = cfg.getNetworkConfig();
         networkConfig.setPort(serverInfo.consensusPort);
@@ -37,9 +34,12 @@ public class ConsensusServer {
         join.getTcpIpConfig().setEnabled(true);
         join.getTcpIpConfig().addMember(serverInfo.consensusHost);
         for(int i = 0 ; i < this.serverConfig.totalServers(); i++){
-            if(i != serverInfo.clusterId)
-             join.getTcpIpConfig().addMember(rootConfig.getServerInfo(serverInfo.clusterId, i).consensusHost);
+            String replicaIP = rootConfig.getServerInfo(serverInfo.clusterId, i).consensusHost
+                    + ":"
+                    + rootConfig.getServerInfo(serverInfo.clusterId, i).consensusPort;
+             join.getTcpIpConfig().addMember(replicaIP);
         }
+
         HazelcastInstance instance = Hazelcast.newHazelcastInstance(cfg);
         List<LogEntry> baseLog;
         baseLog = instance.getList("baselog");
@@ -65,12 +65,26 @@ public class ConsensusServer {
         logs.get(0).add(entry);
     }
 
-    public void addMetaLogEntry(Tag tag, int level){
 
-    }
 
-    public void addMetaLogEntry(LogEntry log, int level){
-
+    public void addMetaLogEntry(MetalogData log, int level){
+        try {
+            String metalogJson = log.serialize();
+            LogEntry metalogEntry = LogEntry.newBuilder()
+                    .setKey(this.currentTimestamp())
+                    .addTags("metalog"+(level+1))
+                    .setValue(metalogJson).build();
+            String entrySHA = HashFunctions.SHAsum(metalogEntry.toByteArray());
+            int entryLevel = level ++;
+            if (logs.size() < entryLevel){
+                List<LogEntry> newLevel = new LinkedList<>();
+                logs.add(newLevel);
+            }
+            logs.get(entryLevel).add(metalogEntry);
+        }
+        catch (Exception e){
+            System.out.println(e.getMessage());
+        }
     }
 
     /*
@@ -90,7 +104,10 @@ public class ConsensusServer {
             }
             result = logFile;
         }
-        addMetaLogEntry(requestTag, entryLevel+1);
+        MetalogData dataItem = new MetalogData();
+        dataItem.userID = "demo";
+        dataItem.accessTag = requestTag.getName();
+        addMetaLogEntry(dataItem, entryLevel);
         return result;
     }
 
@@ -100,7 +117,10 @@ public class ConsensusServer {
     public LogEntry getEntry(String key, int level){
         for(LogEntry l : logs.get(level)){
             if(l.getKey() == key) {
-                addMetaLogEntry(l, level);
+                MetalogData dataItem = new MetalogData();
+                dataItem.userID = "demo";
+                dataItem.key = l.getKey();
+                addMetaLogEntry(dataItem, level);
                 return l;
             }
         }
@@ -112,7 +132,10 @@ public class ConsensusServer {
         for(LogEntry l : logs.get(level)){
             if(l.getKey() == key){
                 if(l.getKey() == key) {
-                    addMetaLogEntry(l, level);
+                    MetalogData dataItem = new MetalogData();
+                    dataItem.userID = "demo";
+                    dataItem.key = l.getKey();
+                    addMetaLogEntry(dataItem, level);
                     return l;
                 }
             }
@@ -165,5 +188,11 @@ public class ConsensusServer {
             return Integer.parseInt(n.group(1));
         }
         return 0;
+    }
+
+    public static String currentTimestamp(){
+        Date date = new Date();
+        Timestamp ts = new Timestamp(date.getTime());
+        return ts.toString();
     }
 }

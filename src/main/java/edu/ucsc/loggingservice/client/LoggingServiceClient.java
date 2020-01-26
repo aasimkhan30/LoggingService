@@ -5,7 +5,6 @@ import edu.ucsc.loggingservice.models.ServerInfo;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.StatusRuntimeException;
-import sun.rmi.runtime.Log;
 
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;

@@ -15,7 +15,7 @@ public class MetalogData {
     /*
     TODO: The current implementation can be a bit inefficient as all the keys are stored. A better implementation will be to store just then range of keys.
      */
-    public LinkedList<String> accesses;
+    public String  key;
 
     public String accessTag;
 

@@ -7,10 +7,6 @@ import edu.ucsc.loggingservice.server.LoggingServiceServer;
 
 import java.util.logging.Logger;
 
-/**
- * Hello world!
- *
- */
 public class App 
 {
     private static final Logger logger = Logger.getLogger(App.class.getName());
@@ -23,14 +19,10 @@ public class App
                     try {
                         int clusterId = Integer.parseInt(args[i++]);
                         int nodeId = Integer.parseInt(args[i++]);
-                        edu.ucsc.loggingservice.server.LoggingServiceServer loggingServer = new LoggingServiceServer(clusterId, nodeId);
+                        logger.info("Trying to Start Cluster "+clusterId +", Server " + nodeId);
+                        LoggingServiceServer loggingServer = new LoggingServiceServer(clusterId, nodeId);
                         loggingServer.start();
-                        clusterId = Integer.parseInt(args[i++]);
-                        nodeId = Integer.parseInt(args[i++]);
-                        edu.ucsc.loggingservice.server.LoggingServiceServer loggingServer2 = new LoggingServiceServer(clusterId, nodeId);
-                        loggingServer2.start();
                         loggingServer.blockUntilShutdown();
-                        loggingServer2.start();
                     }
                     catch(Exception e){
                         System.err.println(e.getMessage());

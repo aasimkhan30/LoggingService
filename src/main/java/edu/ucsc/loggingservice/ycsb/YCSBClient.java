@@ -38,6 +38,7 @@ public class YCSBClient extends DB {
     public Status read(String s, String s1, Set<String> set, Map<String, ByteIterator> map) {
         System.out.println("Table: " + s);
         System.out.println("Key: "+ s1);
+        System.out.println(set.toString());
         System.out.println(map.toString());
         return null;
     }
