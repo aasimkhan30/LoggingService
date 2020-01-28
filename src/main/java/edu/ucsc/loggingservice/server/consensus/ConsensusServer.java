@@ -71,6 +71,7 @@ public class ConsensusServer {
         try {
             String metalogJson = log.serialize();
             LogEntry metalogEntry = LogEntry.newBuilder()
+                    .setTimestamp(this.currentTimestamp())
                     .setKey(this.currentTimestamp())
                     .addTags("metalog"+(level+1))
                     .setValue(metalogJson).build();

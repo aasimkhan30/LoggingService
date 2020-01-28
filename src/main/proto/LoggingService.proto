@@ -23,9 +23,10 @@ service LoggingService {
 
 message LogEntry{
     string key = 1;
-    string value = 2;
-    string digest = 3;
-    repeated string tags = 4;
+    string timestamp = 2;
+    string value = 3;
+    string digest = 4;
+    repeated string tags = 5;
 }
 
 message Tag{

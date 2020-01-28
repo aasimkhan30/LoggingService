@@ -39,10 +39,10 @@ public class App
                         LoggingServiceClient client = new LoggingServiceClient(serverInfo);
                         if(nodeId == 0){
                             logger.info("HI");
-                            client.addLogEntry();
+                            //client.addLogEntry();
                         }
                         else {
-                            client.getLogs();
+                            //client.getLogs();
                         }
                         client.shutdown();
                     }
