@@ -48,6 +48,7 @@ public class ConsensusServer {
     }
 
     public void addLogEntry(LogEntry entry){
+        entry.toBuilder().setTimestamp(currentTimestamp()).build();
         List<String> entryTags = entry.getTagsList();
         try {
             String entrySHA = HashFunctions.SHAsum(entry.toByteArray());

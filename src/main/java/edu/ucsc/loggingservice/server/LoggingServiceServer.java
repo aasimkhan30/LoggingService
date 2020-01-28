@@ -73,7 +73,7 @@ public class LoggingServiceServer{
          */
         @Override
         public void createLog(CreateLogRequest request, StreamObserver<CreateLogResponse> responseObserver) {
-            logger.info("GETTING LOG " + request.getLog().getKey());
+            logger.info(String.format("Trying to add %s with tag %s", request.getLog().getKey(), request.getLog().getTags(0)));
             cServer.addLogEntry(request.getLog());
             CreateLogResponse reply = CreateLogResponse.newBuilder().setSuccess(true).build();
             responseObserver.onNext(reply);
@@ -85,7 +85,8 @@ public class LoggingServiceServer{
          */
         @Override
         public void getLogEntry(GetLogEntryRequest request, StreamObserver<GetLogEntryResponse> responseObserver) {
-            LogEntry responseEntry = cServer.getEntry(request.getKey(), request.getLevel());
+            logger.info(String.format("Trying to read %s with tag %s", request.getKey(), request.getTag()));
+            LogEntry responseEntry = cServer.getEntry(request.getKey(), request.getTag());
             GetLogEntryResponse response = GetLogEntryResponse.newBuilder().setLog(responseEntry).build();
             responseObserver.onNext(response);
             responseObserver.onCompleted();

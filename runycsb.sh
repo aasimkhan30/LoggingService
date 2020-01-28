@@ -3,5 +3,4 @@ java -cp ./target/LoggingService-1.0-SNAPSHOT-jar-with-dependencies.jar:./lib/co
 -db edu.ucsc.loggingservice.ycsb.YCSBClient \
 -P ./workloads/workloada \
 -p measurementtype=timeseries.granularity=1000 \
--P large.dat
--s > transactions.dat
+-threads 9

@@ -103,7 +103,7 @@ message GetLedgerResponse {
 
 message GetLogEntryRequest{
     string key = 1;
-    int32 level = 2;
+    string tag = 2;
 }
 message GetLogEntryResponse {
     LogEntry log = 1;
