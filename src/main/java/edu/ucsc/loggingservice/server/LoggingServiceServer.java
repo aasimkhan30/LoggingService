@@ -6,6 +6,7 @@ import edu.ucsc.loggingservice.models.ServerInfo;
 import edu.ucsc.loggingservice.server.consensus.ConsensusServer;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
+import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
 
 import java.io.IOException;
@@ -73,7 +74,7 @@ public class LoggingServiceServer{
          */
         @Override
         public void createLog(CreateLogRequest request, StreamObserver<CreateLogResponse> responseObserver) {
-            logger.info(String.format("Trying to add %s with tag %s", request.getLog().getKey(), request.getLog().getTags(0)));
+            //logger.info(String.format("Trying to add %s with tag %s", request.getLog().getKey(), request.getLog().getTags(0)));
             cServer.addLogEntry(request.getLog());
             CreateLogResponse reply = CreateLogResponse.newBuilder().setSuccess(true).build();
             responseObserver.onNext(reply);
@@ -85,9 +86,15 @@ public class LoggingServiceServer{
          */
         @Override
         public void getLogEntry(GetLogEntryRequest request, StreamObserver<GetLogEntryResponse> responseObserver) {
-            logger.info(String.format("Trying to read %s with tag %s", request.getKey(), request.getTag()));
+            //logger.info(String.format("Trying to read %s with tag %s", request.getKey(), request.getTag()));
             LogEntry responseEntry = cServer.getEntry(request.getKey(), request.getTag());
-            GetLogEntryResponse response = GetLogEntryResponse.newBuilder().setLog(responseEntry).build();
+            GetLogEntryResponse response;
+            if(responseEntry != null) {
+                response = GetLogEntryResponse.newBuilder().setLog(responseEntry).setSuccess(true).build();
+            }
+            else{
+                response = GetLogEntryResponse.newBuilder().setSuccess(false).build();
+            }
             responseObserver.onNext(response);
             responseObserver.onCompleted();
         }

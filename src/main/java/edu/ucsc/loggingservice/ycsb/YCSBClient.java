@@ -30,11 +30,11 @@ public class YCSBClient extends DB {
             serverConfig = new ServerConfiguration();
             int totalServers = serverConfig.totalServers();
             threadID.set(counter.addAndGet(1));
-            logger.info(String.format("------\n\n\n TreadID = %d \n\n\n", threadID.get()));
+            //logger.info(String.format("------\n\n\n TreadID = %d \n\n\n", threadID.get()));
             int threadServer = threadID.get() % totalServers;
             serverInfo.set(serverConfig.getServerInfo(0, threadServer));
             tag.set(String.format("device%d", threadServer));
-            logger.info(String.format("Thread using server %s:%s", serverInfo.get().host, serverInfo.get().port));
+            //logger.info(String.format("Thread using server %s:%s", serverInfo.get().host, serverInfo.get().port));
             grpcClient.set(new LoggingServiceClient(serverInfo.get()));
             if(gson == null)
                 gson = new Gson();
@@ -54,7 +54,8 @@ public class YCSBClient extends DB {
 
     @Override
     public int scan(String s, String s1, int i, Set<String> set, Vector<HashMap<String, ByteIterator>> vector) {
-        throw new UnsupportedOperationException();
+        grpcClient.get().getLogFile(tag.get());
+        return 1;
     }
 
     @Override

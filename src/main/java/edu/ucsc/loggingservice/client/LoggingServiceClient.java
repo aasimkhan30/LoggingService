@@ -5,7 +5,6 @@ import edu.ucsc.loggingservice.models.ServerInfo;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.StatusRuntimeException;
-import sun.rmi.runtime.Log;
 
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
@@ -53,11 +52,11 @@ public class LoggingServiceClient {
             logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
             return;
         }
-        logger.info("Greeting: " + reply.getSuccess());
+        //logger.info("Greeting: " + reply.getSuccess());
     }
 
     public void getLog(String data, String tag){
-        GetLogEntryRequest request = GetLogEntryRequest.newBuilder().setKey("data").setTag(tag).build();
+        GetLogEntryRequest request = GetLogEntryRequest.newBuilder().setKey(data).setTag(tag).build();
         GetLogEntryResponse response;
         try{
             response = blockingStub.getLogEntry(request);
@@ -65,11 +64,18 @@ public class LoggingServiceClient {
             logger.log(Level.WARNING, "RPC failed : {0}", e.getStatus());
             return;
         }
-        logger.info("Greeting: " + response.getLog());
+//        if(response.getSuccess())
+//            logger.info("Greeting: " + response.getSuccess());
     }
 
     public void getLogFile(String tag){
-
+        GetLedgerRequest request = GetLedgerRequest.newBuilder().setTag(tag).build();
+        try{
+            GetLedgerResponse response = blockingStub.getLedger(request);
+        }catch (StatusRuntimeException e){
+            logger.log(Level.WARNING, "RPC failed : {0}", e.getStatus());
+            return;
+        }
     }
 
     public void verifyLogEntry(LogEntry entry){

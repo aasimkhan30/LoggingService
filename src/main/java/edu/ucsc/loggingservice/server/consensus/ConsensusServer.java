@@ -11,18 +11,19 @@ import edu.ucsc.loggingservice.Tag;
 import edu.ucsc.loggingservice.configuration.ServerConfiguration;
 import edu.ucsc.loggingservice.models.MetalogData;
 import edu.ucsc.loggingservice.models.ServerInfo;
-import sun.rmi.runtime.Log;
 
 import java.sql.Timestamp;
 import java.util.*;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ConsensusServer {
+    private static final Logger logger = Logger.getLogger(ConsensusServer.class.getName());
     private static List<List<LogEntry>> logs;
     private static Map<String, Tag> tags;
     public  ServerConfiguration serverConfig;
-
+    HazelcastInstance instance;
 
     public ConsensusServer(ServerInfo serverInfo, ServerConfiguration rootConfig){
         serverConfig = rootConfig;
@@ -40,11 +41,17 @@ public class ConsensusServer {
              join.getTcpIpConfig().addMember(replicaIP);
         }
 
-        HazelcastInstance instance = Hazelcast.newHazelcastInstance(cfg);
+        instance = Hazelcast.newHazelcastInstance(cfg);
         List<LogEntry> baseLog;
         baseLog = instance.getList("baselog");
+        logs = new LinkedList<>();
         logs.add(baseLog);
+        tags = new HashMap<>();
         tags = instance.getMap("tag");
+    }
+
+    public void closeServer() {
+        instance.shutdown();
     }
 
     public void addLogEntry(LogEntry entry){
@@ -53,14 +60,22 @@ public class ConsensusServer {
         try {
             String entrySHA = HashFunctions.SHAsum(entry.toByteArray());
             for(String t: entryTags){
-                Tag i = tags.get(t);
+                Tag i;
+                if(tags.containsKey(t)){
+                    i = tags.get(t);
+                }
+                else {
+                    i = Tag.newBuilder().setName(t).getDefaultInstanceForType();
+                }
                 String concat = i.getDigest() + entrySHA;
                 String newSHA = HashFunctions.SHAsum(concat.getBytes());
                 i.toBuilder().setDigest(newSHA).build();
                 entry.toBuilder().setDigest(newSHA).build();
+                tags.put(t, i);
             }
         }
         catch(Exception e){
+            logger.info("EEWSAFHFAUFSHAHfuhaiu");
             System.out.println(e.getMessage());
         }
         logs.get(0).add(entry);
@@ -77,10 +92,12 @@ public class ConsensusServer {
                     .addTags("metalog"+(level+1))
                     .setValue(metalogJson).build();
             String entrySHA = HashFunctions.SHAsum(metalogEntry.toByteArray());
-            int entryLevel = level ++;
+            int entryLevel = level + 1;
             if (logs.size() < entryLevel){
                 List<LogEntry> newLevel = new LinkedList<>();
                 logs.add(newLevel);
+                tags.put("metalog"+(entryLevel), Tag.newBuilder().
+                        setName("metalog"+entryLevel).getDefaultInstanceForType());
             }
             logs.get(entryLevel).add(metalogEntry);
         }
@@ -132,14 +149,12 @@ public class ConsensusServer {
     public LogEntry getEntry(String key, String tag){
         int level = findLevel(tag);
         for(LogEntry l : logs.get(level)){
-            if(l.getKey() == key){
-                if(l.getKey() == key) {
-                    MetalogData dataItem = new MetalogData();
-                    dataItem.userID = "demo";
-                    dataItem.key = l.getKey();
-                    addMetaLogEntry(dataItem, level);
-                    return l;
-                }
+            if(l.getKey().equals(key)){
+                MetalogData dataItem = new MetalogData();
+                dataItem.userID = "demo";
+                dataItem.key = l.getKey();
+                addMetaLogEntry(dataItem, level);
+                return l;
             }
         }
         return null;

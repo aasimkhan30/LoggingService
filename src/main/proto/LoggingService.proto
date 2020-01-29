@@ -107,7 +107,8 @@ message GetLogEntryRequest{
 }
 message GetLogEntryResponse {
     LogEntry log = 1;
-    ResponseStatus status = 2;
+    bool success = 2;
+    ResponseStatus status = 3;
 }
 
 message VerifyLedgerRequest {
